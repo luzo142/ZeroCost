@@ -20,26 +20,37 @@ export async function POST(req: Request) {
       messages: [
         {
           role: "system",
-          content:
-            "Bạn là chuyên gia giáo dục mầm non. Trả về DUY NHẤT định dạng JSON chuẩn không kèm văn bản thừa.",
+          content: `Bạn là chuyên gia giáo dục mầm non xuất sắc, am hiểu tâm lý trẻ em từ 2-6 tuổi.
+          Nhiệm vụ của bạn là tạo ra nội dung chất lượng cao theo yêu cầu của giáo viên.
+
+          QUY TẮC NỘI DUNG:
+          1. Nếu yêu cầu là viết TRUYỆN:
+             - Ngôn ngữ: Trong sáng, giàu hình ảnh, dùng nhiều từ láy, từ tượng hình.
+             - Cấu trúc: Có mở đầu, diễn biến (có cao trào nhẹ), kết thúc có hậu. Có lời thoại nhân vật sinh động.
+          
+          2. Nếu yêu cầu là TRÒ CHƠI/HOẠT ĐỘNG:
+             - Phải đầy đủ: Mục đích (phát triển kỹ năng gì), Chuẩn bị (đồ dùng), Cách chơi (hướng dẫn từng bước 1, 2, 3), và Lưu ý an toàn.
+             - Trò chơi phải mang tính tương tác cao, vui nhộn.
+
+          QUY TẮC ĐỊNH DẠNG (BẮT BUỘC):
+          - Luôn trả về JSON sạch.
+          - Trường "content" PHẢI là chuỗi (string), sử dụng xuống dòng (\\n) để trình bày. KHÔNG TRẢ VỀ OBJECT CON.`,
         },
         {
           role: "user",
-          content: `Tạo một nội dung giáo dục dựa trên yêu cầu: "${message}". 
-          Cấu trúc JSON bắt buộc:
+          content: `Dựa trên yêu cầu: "${message}", hãy tạo nội dung phù hợp.
+          Cấu trúc JSON:
           {
             "type": "story" hoặc "activity",
-            "title": "Tiêu đề",
-            "content": "Nội dung chi tiết",
-            "lesson": "Bài học hoặc lưu ý"
+            "title": "Tiêu đề thật hay và lôi cuốn",
+            "content": "Nội dung truyện hoặc Hướng dẫn trò chơi chi tiết từng bước",
+            "lesson": "Bài học rút ra cho bé hoặc Lưu ý quan trọng cho giáo viên"
           }`,
         },
       ],
-      // Llama 3.3 70B cực mạnh, ngang ngửa Gemini Pro/GPT-4
       model: "llama-3.3-70b-versatile",
-      // Ép kiểu JSON cực chuẩn
       response_format: { type: "json_object" },
-      temperature: 0.7,
+      temperature: 0.8, // Tăng độ sáng tạo lên một chút cho truyện hay hơn
     });
 
     const resContent = chatCompletion.choices[0]?.message?.content;
@@ -48,11 +59,13 @@ export async function POST(req: Request) {
       throw new Error("AI không trả về dữ liệu");
     }
 
-    return NextResponse.json(JSON.parse(resContent));
+    // Parse thử để đảm bảo JSON chuẩn trước khi gửi về Frontend
+    const parsedData = JSON.parse(resContent);
+    return NextResponse.json(parsedData);
   } catch (error: any) {
     console.error("LỖI GROQ:", error.message);
     return NextResponse.json(
-      { error: "Lỗi kết nối Groq", detail: error.message },
+      { error: "Lỗi xử lý AI", detail: error.message },
       { status: 500 },
     );
   }
