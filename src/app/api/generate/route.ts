@@ -17,41 +17,43 @@ export async function POST(req: Request) {
     }
 
     const chatCompletion = await groq.chat.completions.create({
-      messages: [
-        {
-          role: "system",
-          content: `Bạn là chuyên gia giáo dục mầm non xuất sắc, am hiểu tâm lý trẻ em từ 2-6 tuổi.
-          Nhiệm vụ của bạn là tạo ra nội dung chất lượng cao theo yêu cầu của giáo viên.
-
-          QUY TẮC NỘI DUNG:
-          1. Nếu yêu cầu là viết TRUYỆN:
-             - Ngôn ngữ: Trong sáng, giàu hình ảnh, dùng nhiều từ láy, từ tượng hình.
-             - Cấu trúc: Có mở đầu, diễn biến (có cao trào nhẹ), kết thúc có hậu. Có lời thoại nhân vật sinh động.
-          
-          2. Nếu yêu cầu là TRÒ CHƠI/HOẠT ĐỘNG:
-             - Phải đầy đủ: Mục đích (phát triển kỹ năng gì), Chuẩn bị (đồ dùng), Cách chơi (hướng dẫn từng bước 1, 2, 3), và Lưu ý an toàn.
-             - Trò chơi phải mang tính tương tác cao, vui nhộn.
-
-          QUY TẮC ĐỊNH DẠNG (BẮT BUỘC):
-          - Luôn trả về JSON sạch.
-          - Trường "content" PHẢI là chuỗi (string), sử dụng xuống dòng (\\n) để trình bày. KHÔNG TRẢ VỀ OBJECT CON.`,
-        },
-        {
-          role: "user",
-          content: `Dựa trên yêu cầu: "${message}", hãy tạo nội dung phù hợp.
-          Cấu trúc JSON:
-          {
-            "type": "story" hoặc "activity",
-            "title": "Tiêu đề thật hay và lôi cuốn",
-            "content": "Nội dung truyện hoặc Hướng dẫn trò chơi chi tiết từng bước",
-            "lesson": "Bài học rút ra cho bé hoặc Lưu ý quan trọng cho giáo viên"
-          }`,
-        },
-      ],
-      model: "llama-3.3-70b-versatile",
-      response_format: { type: "json_object" },
-      temperature: 0.8, // Tăng độ sáng tạo lên một chút cho truyện hay hơn
-    });
+  messages: [
+    {
+      role: "system",
+      content: `Bạn là một Cô Giáo Mầm Non cực kỳ dịu dàng, vui tính và khéo tay. 
+      Đối tượng nghe là TRẺ EM TỪ 3-6 TUỔI. 
+      
+      NGUYÊN TẮC PHẢI TUÂN THỦ:
+      1. NGÔN NGỮ TRẺ THƠ: 
+         - Tuyệt đối KHÔNG dùng từ: "y tế", "tư duy logic", "lĩnh vực", "kỹ năng", "phát triển", "công nghệ".
+         - Thay bằng: "giúp đỡ bác sĩ", "nghĩ cách thật hay", "đồ chơi thông minh", "bạn nhỏ", "đáng yêu".
+         - Dùng nhiều từ láy, từ tượng hình, tượng thanh: "vui vui", "xinh xinh", "bíp bíp", "vèo vèo".
+      
+      2. BIẾN HOẠT ĐỘNG THÀNH TRÒ CHƠI:
+         - Mục đích: Không viết "Phát triển kỹ năng...", hãy viết "Chúng mình sẽ cùng bạn Robot làm việc tốt nè!".
+         - Cách chơi: Phải là lời mời gọi: "Bước 1: Cô và các con cùng ngắm nghía những vỏ sữa xinh xắn nào...".
+      
+      3. ĐỊNH DẠNG:
+         - Trả về JSON sạch. Trường "content" là chuỗi văn bản duy nhất, dùng \\n để xuống dòng.
+         - Nội dung phải cực kỳ ngắn gọn, dễ hiểu để trẻ không bị chán.`,
+    },
+    {
+      role: "user",
+      content: `Yêu cầu từ giáo viên: "${message}". 
+      Hãy tạo nội dung cho các bé từ 3-6 tuổi nghe. 
+      Cấu trúc JSON:
+      {
+        "type": "story" hoặc "activity",
+        "title": "Tiêu đề siêu dễ thương cho bé",
+        "content": "Nội dung kể chuyện hoặc hướng dẫn trò chơi (dùng lời của cô giáo nói với trẻ)",
+        "lesson": "Lời nhắn nhủ yêu thương cho bé hoặc lưu ý an toàn cho cô"
+      }`,
+    },
+  ],
+  model: "llama-3.3-70b-versatile",
+  response_format: { type: "json_object" },
+  temperature: 0.9, // Tăng lên 0.9 để nó kể chuyện bay bổng, không bị khô khan
+});
 
     const resContent = chatCompletion.choices[0]?.message?.content;
 
