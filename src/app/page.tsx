@@ -31,30 +31,30 @@ export default function Home() {
   const renderContent = (content: any) => {
     if (typeof content === "string") {
       return (
-        <p className="whitespace-pre-line text-slate-700 leading-relaxed">
+        <p className="whitespace-pre-line leading-7 text-[15px] text-slate-700">
           {content}
         </p>
       );
     }
+
     if (typeof content === "object" && content !== null) {
       return (
         <div className="space-y-3">
-          {Object.entries(content).map(([key, value]: [string, any]) => (
-            <div
-              key={key}
-              className="bg-slate-50 p-3 rounded-lg border border-slate-100"
-            >
-              <span className="text-xs font-bold uppercase text-blue-500 block mb-1">
-                {key}
-              </span>
-              <div className="text-slate-700 text-sm">
-                {typeof value === "object" ? JSON.stringify(value) : value}
-              </div>
+          {Object.entries(content).map(([key, value]) => (
+            <div key={key}>
+              <p className="font-semibold text-blue-600 text-sm mb-1">{key}</p>
+
+              <p className="text-slate-700 leading-7 text-[15px] whitespace-pre-line">
+                {typeof value === "string"
+                  ? value
+                  : JSON.stringify(value, null, 2)}
+              </p>
             </div>
           ))}
         </div>
       );
     }
+
     return null;
   };
 
